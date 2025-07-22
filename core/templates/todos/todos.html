@@ -1,0 +1,56 @@
+{% extends 'todos/base.html' %}
+{% load static %}
+
+{% block title %}Lista de tareas{% endblock %}
+{% block header %}Mis tareas{% endblock %}
+
+{% block content %}
+  {% if todos %}
+    <table class="todo-table">
+      <thead>
+        <tr>
+          <th>Título</th>
+          <th>Estado</th>
+          <th></th> {# Encabezado vacío para acciones #}
+        </tr>
+      </thead>
+      <tbody>
+        {% for todo in todos %}
+        <tr>
+          <td>{{ todo.titulo }}</td>
+          <td>{% if todo.completado %}✅{% else %}❌{% endif %}</td>
+          <td style="position: relative;">
+            <details>
+              <summary style="cursor: pointer;">⋮</summary>
+              <div class="dropdown">
+                <form action="{% url 'toggle_todo' todo.id %}" method="post">
+                  {% csrf_token %}
+                  <button type="submit">Cambiar estado</button>
+                </form>
+                <form action="{% url 'editar_todo' todo.id %}" method="get">
+                  <button type="submit">Editar título</button>
+                </form>
+                <form action="{% url 'eliminar_todo' todo.id %}" method="post">
+                  {% csrf_token %}
+                  <button type="submit">Eliminar</button>
+                </form>
+              </div>
+            </details>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No hay ToDos aún.</p>
+  {% endif %}
+
+  <hr>
+
+  <h3>Crear nueva tarea</h3>
+  <form action="{% url 'crear_todo' %}" method="post">
+    {% csrf_token %}
+    <input type="text" name="titulo" placeholder="Nueva tarea" required>
+    <button type="submit">Agregar</button>
+  </form>
+{% endblock %}

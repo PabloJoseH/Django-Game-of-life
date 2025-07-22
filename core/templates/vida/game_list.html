@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Lista de Juegos de la Vida</title>
+  <style>
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: center;
+    }
+    tr:hover {
+      background-color: #f0f0f0;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Juegos de la Vida</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Título</th>
+        <th>Incertidumbre</th>
+        <th>Segundos por tick</th>
+        <th>Dimensión</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for game in juegos %}
+      <tr data-url="{% url 'detalle_juego' game.id %}" onclick="window.location.href=this.dataset.url">
+        <td>{{ game.titulo }}</td>
+        <td>{{ game.incertidumbre }}</td>
+        <td>{{ game.segundos_por_tick }}</td>
+        <td>{{ game.dimension.0 }} x {{ game.dimension.1 }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</body>
+</html>

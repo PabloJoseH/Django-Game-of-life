@@ -1,0 +1,18 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}Mi App{% endblock %}</title>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'todos/css/styles.css' %}">
+</head>
+<body>
+  <header class="site-header">
+    <h1>{% block header %}ToDo App{% endblock %}</h1>
+  </header>
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

@@ -1,0 +1,44 @@
+{% extends "vida/base.html" %}
+{% block content %}
+  <h1>Juegos de la Vida</h1>
+
+  {% if juegos %}
+    <table border="1" cellpadding="8">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Título</th>
+          <th>Incertidumbre</th>
+          <th>Segundos por Tick</th>
+          <th>Dimensión</th>
+          <th>Matriz</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for juego in juegos %}
+          <tr>
+            <td>{{ juego.id }}</td>
+            <td>{{ juego.titulo }}</td>
+            <td>{{ juego.incertidumbre }}</td>
+            <td>{{ juego.segundos_por_tick }}</td>
+            <td>{{ juego.dimension }}</td>
+            <td>
+              <pre>{{ juego.matriz|safe }}</pre>
+            </td>
+            <td>
+              <a href="{% url 'toggle_matriz' juego.id %}">🔁</a>
+              <a href="{% url 'cambiar_titulo_descripcion' juego.id %}">✏️</a>
+              <a href="{% url 'eliminar_juego' juego.id %}">🗑️</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No hay juegos aún.</p>
+  {% endif %}
+
+  <br>
+  <a href="{% url 'crear_juego' %}">➕ Crear nuevo juego</a>
+{% endblock %}

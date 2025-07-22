@@ -1,0 +1,11 @@
+{% extends 'todos/base.html' %}
+
+{% block content %}
+  <h2>Editar tarea</h2>
+  <form method="post">
+    {% csrf_token %}
+    <input type="text" name="titulo" value="{{ todo.titulo }}" required>
+    <button type="submit">Guardar</button>
+    <a href="{% url 'lista_todos' %}">Cancelar</a>
+  </form>
+{% endblock %}

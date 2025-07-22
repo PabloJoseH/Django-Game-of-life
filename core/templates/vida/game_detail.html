@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ juego.titulo }}</title>
+  <style>
+    /* Grid container: las columnas se definen vía CSS variable --columns */
+    .grid {
+      display: grid;
+      gap: 2px;
+      grid-template-columns: repeat(var(--columns), 20px);
+    }
+    /* Cada celda */
+    .cell {
+      width: 20px;
+      height: 20px;
+      border: 1px solid #ccc;
+    }
+    /* Estado vivo/muerto */
+    .on  { background-color: black; }
+    .off { background-color: white; }
+
+    /* Tipografía y espaciado */
+    body { font-family: Arial, sans-serif; padding: 1rem; }
+    h1   { margin-bottom: 0.5rem; }
+    p    { margin: 0.2rem 0; }
+  </style>
+</head>
+<body>
+  <h1>{{ juego.titulo }}</h1>
+  <p><strong>Descripción:</strong> {{ juego.descripcion }}</p>
+  <p><strong>Incertidumbre:</strong> {{ juego.incertidumbre }}</p>
+  <p><strong>Segundos por tick:</strong> {{ juego.segundos_por_tick }}</p>
+
+  {# Contenedor de la grilla; pasamos columnas y game-id para JS #}
+  <div
+    class="grid"
+    style="--columns: {{ juego.dimension.1 }};"
+    data-game-id="{{ juego.id }}"
+    data-tick="{{ juego.segundos_por_tick }}"
+  >
+    {% for fila in juego.matriz %}
+      {% for celda in fila %}
+        <div class="cell {% if celda %}on{% else %}off{% endif %}"></div>
+      {% endfor %}
+    {% endfor %}
+  </div>
+
+  <script>
+    (function(){
+      const grid = document.querySelector('.grid');
+      const gameId = grid.dataset.gameId;
+      // segundos_por_tick ya llega en segundos, convertimos a ms
+      const intervalMs = parseFloat(grid.dataset.tick) * 1000;
+
+      // Función que redibuja la grilla según la matriz recibida
+      function renderMatrix(matriz) {
+        // vaciamos
+        grid.innerHTML = '';
+        matriz.forEach(fila => {
+          fila.forEach(celda => {
+            const cellDiv = document.createElement('div');
+            cellDiv.className = 'cell ' + (celda ? 'on' : 'off');
+            grid.appendChild(cellDiv);
+          });
+        });
+      }
+
+      // Cada tick, llamamos al endpoint de update que aplica la función update
+      async function tick() {
+        try {
+          const res = await fetch(`/vida/update/${gameId}/`, {
+            method: 'POST',
+            headers: { 'X-CSRFToken': getCookie('csrftoken') },
+          });
+          if (!res.ok) throw new Error(res.statusText);
+          const json = await res.json();
+          renderMatrix(json.matriz);
+        } catch (e) {
+          console.error('Error actualizando matriz:', e);
+        }
+      }
+
+      // Util para obtener la cookie CSRF (si usás Django CSRF)
+      function getCookie(name) {
+        const v = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+        return v ? v.pop() : '';
+      }
+
+      // Arrancamos el loop
+      setInterval(tick, intervalMs);
+    })();
+  </script>
+</body>
+</html>
